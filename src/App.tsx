@@ -45,9 +45,11 @@ const App: React.FC = () => {
       setForm(data);
     };
 
-    const myscript = document.getElementById('test') as HTMLScriptElement;
-    const source = myscript.src.match(/@(.*)\//) as RegExpMatchArray;
-    const api_key = source[1];
+    const hiddenDiv = document.getElementById('test') as HTMLDivElement;
+    const api_key = hiddenDiv.dataset.key as string;
+    // const myscript = document.getElementById('test') as HTMLScriptElement;
+    // const source = myscript.src.match(/@(.*)\//) as RegExpMatchArray;
+    // const api_key = source[1];
     setSource(api_key);
 
     fetchForm();
