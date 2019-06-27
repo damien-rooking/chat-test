@@ -2,18 +2,34 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import './App.css';
 import styled from 'styled-components';
 import axios from 'axios';
+import { createGlobalStyle } from 'styled-components';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import Icon from '@material-ui/core/Icon';
+import DeleteIcon from '@material-ui/icons/Delete';
+import NavigationIcon from '@material-ui/icons/Navigation';
+import { Edit, Close } from '@material-ui/icons';
+import { FormControl, InputLabel, Input, FormHelperText, TextField, Button, Card, CardContent } from '@material-ui/core';
+
+const GlobalStyle = createGlobalStyle`
+  body {
+   font-family: 'Roboto', sans-serif
+  }
+`;
 
 interface IData {
   label: string;
-  type: string;
+  input_type: string;
   placeholder: string;
-  input: string;
+  tag: string;
   value: string;
 }
 
 const App: React.FC = () => {
   const [form, setForm] = useState<IData[]>([]);
   const [source, setSource] = useState('');
+  const [toggle, setToggle] = useState(false);
 
   const handleChange = ({ target }: { target: { name: string; value: string } }) => {
     let updatedForm = [...form];
@@ -27,17 +43,19 @@ const App: React.FC = () => {
     axios.post('http://localhost:8000/inquiries', form).then(response => console.log(response));
   };
 
+  const handleToggle = () => setToggle(!toggle);
+
   useEffect(() => {
     const data: IData[] = [
-      { label: 'name', input: 'input', type: 'text', placeholder: 'Enter your name', value: '' },
-      { label: 'email', input: 'input', type: 'email', placeholder: 'Enter your email address', value: '' },
-      { label: 'message', input: 'textarea', type: 'textarea', placeholder: 'Enter your message', value: '' },
+      { label: 'name', tag: 'input', input_type: 'text', placeholder: 'Enter your name', value: '' },
+      { label: 'email', tag: 'input', input_type: 'email', placeholder: 'Enter your email address', value: '' },
+      { label: 'message', tag: 'textarea', input_type: 'textarea', placeholder: 'Enter your message', value: '' },
     ];
 
     const api = new Promise<IData[]>(function(resolve, reject) {
       setTimeout(function() {
         return resolve(data);
-      }, 3000);
+      }, 300);
     });
 
     const fetchForm = async () => {
@@ -57,20 +75,46 @@ const App: React.FC = () => {
     return () => {};
   }, []);
 
+  const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+      fab: {
+        margin: theme.spacing(1),
+      },
+      extendedIcon: {
+        marginRight: theme.spacing(1),
+      },
+    })
+  );
+  const classes = useStyles();
+
   return (
     <Container className="App">
-      <Title>{source}</Title>
-      <form>
-        {form.map(item => (
-          <div key={item.label}>
-            <label>{item.label}</label>
-            {React.createElement(item.input, { name: item.label, value: item.value, placeholder: item.placeholder, type: item.type, onChange: (event: any) => handleChange(event) }, null)}
-          </div>
-        ))}
-        <button type="button" onClick={() => handleSubmit()}>
-          submit
-        </button>
-      </form>
+      <GlobalStyle />
+      {toggle ? (
+        <Card>
+          <CardContent>
+            <Title>{source}</Title>
+            <form>
+              {form.map(item => (
+                // <div key={item.label}>
+                //   <Label>{item.label}</Label>
+                //   {React.createElement(item.tag, { name: item.label, value: item.value, placeholder: item.placeholder, input_type: item.input_type, onChange: (event: any) => handleChange(event) }, null)}
+                // </div>
+                <TextField style={{ display: 'block' }} label={item.label} />
+              ))}
+
+              <Button onClick={() => handleSubmit()}> submit</Button>
+            </form>
+            <Fab color="secondary" aria-label="Edit" className={classes.fab} onClick={() => handleToggle()}>
+              <Close />
+            </Fab>
+          </CardContent>
+        </Card>
+      ) : (
+        <Fab color="secondary" aria-label="Edit" className={classes.fab} onClick={() => handleToggle()}>
+          <Edit />
+        </Fab>
+      )}
     </Container>
   );
 };
@@ -86,7 +130,10 @@ const Container = styled.div`
   bottom: 0;
   right: 0;
   padding: 24px;
-  border: 1px solid;
+`;
+
+const Label = styled.label`
+  display: block;
 `;
 
 export default App;
