@@ -88,11 +88,12 @@ const App: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <Container className="App">
+    <Position>
       <GlobalStyle />
+
       {toggle ? (
-        <Card>
-          <CardContent>
+        <Container className="App">
+          <Wrapper>
             <Title>{source}</Title>
             <form>
               {form.map(item => (
@@ -100,22 +101,27 @@ const App: React.FC = () => {
                 //   <Label>{item.label}</Label>
                 //   {React.createElement(item.tag, { name: item.label, value: item.value, placeholder: item.placeholder, input_type: item.input_type, onChange: (event: any) => handleChange(event) }, null)}
                 // </div>
-                <TextField style={{ display: 'block' }} label={item.label} />
+                <TextField label={item.label} />
               ))}
 
               <Button onClick={() => handleSubmit()}> submit</Button>
             </form>
-            <Fab color="secondary" aria-label="Edit" className={classes.fab} onClick={() => handleToggle()}>
-              <Close />
-            </Fab>
-          </CardContent>
-        </Card>
+          </Wrapper>
+        </Container>
+      ) : (
+        <div />
+      )}
+
+      {toggle ? (
+        <Fab color="secondary" aria-label="Edit" className={classes.fab} onClick={() => handleToggle()}>
+          <Close />
+        </Fab>
       ) : (
         <Fab color="secondary" aria-label="Edit" className={classes.fab} onClick={() => handleToggle()}>
           <Edit />
         </Fab>
       )}
-    </Container>
+    </Position>
   );
 };
 
@@ -125,13 +131,22 @@ const Title = styled.h1`
   color: palevioletred;
 `;
 
-const Container = styled.div`
-  position: absolute;
-  bottom: 0;
-  right: 0;
+const Container = styled(Card)`
   padding: 24px;
+  width: 300px;
+  height: 400px;
+  background: rgb(252, 252, 252);
 `;
 
+const Wrapper = styled.div`
+  border: 1px solid #ddd;
+`;
+const Position = styled.div`
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  text-align: right;
+`;
 const Label = styled.label`
   display: block;
 `;
